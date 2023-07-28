@@ -1,0 +1,196 @@
+<html>
+
+<head>
+
+    <link crossorigin="anonymous" rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/pretty-print-json@1.0.0/dist/pretty-print-json.css">
+
+    <script crossorigin="anonymous" src="https://code.jquery.com/jquery-3.6.3.min.js"
+        integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="></script>
+    <script crossorigin="anonymous"
+        src="https://cdn.jsdelivr.net/npm/pretty-print-json@1.0.0/dist/pretty-print-json.min.js"></script>
+
+
+    <style>
+        /* Grid -------------------------------------- */
+        /* Define the default grid (it's all in one column) */
+        .form {
+            display: grid;
+            grid-row-gap: 5px;
+        }
+
+        /* Switch to two columns in wider viewports */
+        @media (min-width: 29.375rem) {
+            .form {
+                grid-column-gap: 25px;
+                grid-template-areas:
+                    "label-name  label-email"
+                    "field-name  field-email"
+                    "label-msg   ."
+                    "field-msg   field-msg"
+                    "button      .";
+            }
+        }
+
+        /* The values below correspond to the values shown in grid-template-areas above, placing the items on the grid accordingly. Note that the grid-area value does NOT have to match the class name. For example, .field-message has field-msg as its grid-area. */
+        @media (min-width: 29.375rem) {
+            .label-name {
+                grid-area: label-name;
+            }
+
+            .label-email {
+                grid-area: label-email;
+            }
+
+            .label-message {
+                grid-area: label-msg;
+            }
+
+            .field-name {
+                grid-area: field-name;
+            }
+
+            .field-email {
+                grid-area: field-email;
+            }
+
+            .field-message {
+                grid-area: field-msg;
+            }
+
+            .button {
+                grid-area: button;
+            }
+        }
+
+        /* Generic styles for demo purposes-------------------------------------- */
+        .form {
+            background-color: #eee;
+            font-family: Helvetica, Arial, sans-serif;
+            max-width: 600px;
+            padding: 25px;
+        }
+
+        .field {
+            border: 1px solid #ccc;
+            font-family: inherit;
+            font-size: 1rem;
+            padding: 10px;
+        }
+
+        @media (max-width: 29.3125rem) {
+            .label-email {
+                margin-top: 20px;
+            }
+        }
+
+        .label-message {
+            margin-top: 20px;
+        }
+
+        .button {
+            appearance: none;
+            background-color: orange;
+            border: none;
+            font-size: .9375rem;
+            margin-top: 20px;
+            padding: 10px;
+            /* without this, the button would be as  wide as its column (and the Name field) */
+            justify-self: start;
+        }
+    </style>
+
+
+</head>
+
+<body>
+
+    <form class="form">
+        <label for="authToken">Authorization Token</label>
+        <input type="text" id="authToken" />
+
+        <label for="apiUrlRoot">Root API URL</label>
+        <input type="text" id="apiUrlRoot"
+            value="https://q3g3putgx0.execute-api.us-east-2.amazonaws.com/beta/workflow" />
+
+        <label for="origin">Origin Zip Code</label>
+        <input type="text" id="origin" value="35216" />
+
+        <label for="destination">Destination Zip Code</label>
+        <input type="text" id="destination" value="32145" />
+
+        <label for="shipperEntityId">Shipper Entity Id</label>
+        <input type="text" id="shipperEntityId" value="7575CFD6-40DC-4A3C-B108-98E4047BDED9" />
+
+        <label for="vin">VIN</label>
+        <input type="text" id="vin" value="3C63RRHL3NG152998" />
+
+    </form>
+
+    <button onclick="CallWebAPI()">Submit</button>
+    <textarea id="result" value="" style="width:500px; height:1000px;"></textarea>
+
+    <script lang="javascript">
+
+        async function postData(url = '', data = {}, auth = '') {
+            // Default options are marked with *
+            const response = await fetch(url, {
+                method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                mode: 'cors', // no-cors, *cors, same-origin
+                cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                origin: 'test',
+                redirect: 'follow', // manual, *follow, error
+                referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+                body: JSON.stringify(data) // body data type must match "Content-Type" header
+            });
+
+            return response.json();
+        }
+
+        function CallWebAPI() {
+
+            var form_authToken = $('#authToken').value;
+            var form_apiUrlRoot = $('#apiUrlRoot').value;
+            var form_origin = $('#origin').value;
+            var form_destination = $('#destination').value;
+            var form_shipperEntityId = $('#shipperEntityId').value;
+            var form_vin = $('#vin').value;
+
+            var requestObject = {
+                Parameters:
+                {
+                    destination: form_destination,
+                    origin: form_origin,
+                    shipperEntityId: form_shipperEntityId,
+                    vin: form_vin
+                },
+                RuleSet: "ValidTAQRequest.json",
+                Workflow: "ValidTAQRequest"
+            };
+
+            $.post(form_apiUrlRoot, requestObject, (data) => { document.getElementById('result').value = data; });
+
+            $.ajax({
+                url: form_apiUrlRoot,
+                type: "POST",
+                dataType: "json",
+                crossDomain: true,
+                format: "json",
+                data: requestObject,
+                success: function (data) {
+                    $('#result').value = data;
+                }
+
+            });
+            // postData(form_apiUrlRoot, requestObject, form_authToken).then(
+            //     (data) => { document.getElementById('result').value = data; }
+            // );
+
+        }
+    </script>
+</body>
+
+</html>

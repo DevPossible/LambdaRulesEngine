@@ -1,0 +1,23 @@
+﻿[
+  {
+    "WorkflowName": "ValidRoute",
+    "Rules": [
+      {
+        "RuleName": "IsNot_Central_Alabama",
+        "SuccessEvent": "10",
+        "ErrorMessage": "Route cannot start or end in 351* zip code.",
+        "ErrorType": "Error",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "!Util.IsZipMatch(origin, \"351*\") && !Util.IsZipMatch(destination, \"351*\")"
+      },
+      {
+        "RuleName": "IsNot_WestCoast",
+        "SuccessEvent": "10",
+        "ErrorMessage": "Route cannot start or end in West Coast.",
+        "ErrorType": "Error",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "!Util.IsZipMatch(origin, Fn.LookupZipPattern(\"West_Coast\")) && !Util.IsZipMatch(destination, Fn.LookupZipPattern(\"West_Coast\"))"
+      }
+    ]
+  }
+]

@@ -1,0 +1,23 @@
+﻿[
+  {
+    "WorkflowName": "ValidVehicle",
+    "Rules": [
+      {
+        "RuleName": "VehicleTypeMustBeTruck",
+        "SuccessEvent": "10",
+        "ErrorMessage": "Vehicle type is not Truck.",
+        "ErrorType": "Error",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "Fn.GetVehicleType(vin)==\"TRUCK\""
+      },
+      {
+        "RuleName": "VehicleModelMustBe3500",
+        "SuccessEvent": "10",
+        "ErrorMessage": "Vehicle model is not 3500.",
+        "ErrorType": "Error",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "Fn.GetVehicleData(vin,28)==\"3500\""
+      }
+    ]
+  }
+]
